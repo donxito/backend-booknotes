@@ -1,3 +1,11 @@
+
+// TO DO:
+
+// 1 - DELETE WHAT YOU DON'T USE: path, fs, User, const book nas routes - MAS VER BEM SE TUDO FUNCIONA
+
+// 2 - POR AS PROTECOES -  IS AUTHENTICATED, IS OWNER (VER EVENTSLAP)
+
+
 const express = require('express');
 const router = express.Router();
 const logger = require('morgan');
@@ -9,6 +17,8 @@ const Note = require('../models/Notes.model');
 const User = require("../models/User.model");
 
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
+const { isOwner } = require("../middleware/isOwner.middleware.js");
+
 const { fetchAndSaveCover } = require("../middleware/fetchAndSaveCover.middleware");
 
 // Middleware
@@ -40,6 +50,7 @@ router.get('/books', async (req, res, next) => {
 
         // Respond with the books including the cover image URL
         res.status(200).json(booksWithCoverURLs);
+        console.log('Books sent as response:', booksWithCoverURLs);
     } catch (error) {
         next(error);
     }

@@ -21,10 +21,6 @@ const userSchema = new Schema(
       type: String,
       unique: true,
     },
-    avatar: {
-      type: String,
-      default: "https://variety.com/wp-content/uploads/2021/04/Avatar.jpg?w=800&h=533&crop=1",
-    },
     about: {
       type: String,
       default: "I am using BookNotes.",

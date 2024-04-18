@@ -31,13 +31,13 @@ const bookSchema = new Schema ({
         required: [true, 'Description is required'],
         trim: true
     },
-    user: {
+    reader: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
     notes: {
-        type: String,
-        trim: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Note"
     }
 })
 

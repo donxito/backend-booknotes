@@ -25,6 +25,8 @@ app.use("/", authorsRoutes);
 const userRoutes = require("./routes/user.routes");
 app.use("/", userRoutes);
 
+const notesRoutes = require("./routes/notes.routes");
+app.use("/", notesRoutes);
 
 const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);

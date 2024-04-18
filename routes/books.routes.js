@@ -31,7 +31,7 @@ router.use(express.json());
 router.get('/books', async (req, res, next) => {
     try {
         // Retrieve all books from the database
-        const books = await Book.find().populate('author').populate('user');
+        const books = await Book.find().populate('author').populate('reader').populate('notes');
 
         // Create an array of promises to fetch and save cover images for each book
         const coverPromises = books.map(book => fetchAndSaveCover(book.isbn));
@@ -69,7 +69,7 @@ router.post('/books', async (req, res, next) => {
 // GET /books/:bookId
 router.get('/books/:bookId', async (req, res, next) => {
     try {
-        const book = await Book.findById(req.params.bookId);
+        const book = await Book.findById(req.params.bookId).populate('author').populate('reader').populate('notes');
         
         if (!book) {
             return res.status(404).json({ message: 'Book not found' });

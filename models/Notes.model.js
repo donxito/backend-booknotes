@@ -7,7 +7,7 @@ const noteSchema = new Schema ({
         required: [true, 'Content is required'],
         trim: true
     },
-    user: {
+    reader: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },

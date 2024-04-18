@@ -40,7 +40,7 @@ router.get('/books', async (req, res, next) => {
         await Promise.all(coverPromises);
 
         // Update book objects to include the URL of the book cover image
-        const booksWithCoverURLs = await Promise.all(books.map(async book => {
+        const booksWithCoverURL = await Promise.all(books.map(async book => {
             await fetchAndSaveCover(book.isbn); // Fetch and save cover image
             return {
                 ...book.toObject(), // Convert Mongoose document to plain JavaScript object
@@ -49,8 +49,8 @@ router.get('/books', async (req, res, next) => {
         }));
 
         // Respond with the books including the cover image URL
-        res.status(200).json(booksWithCoverURLs);
-        console.log('Books sent as response:', booksWithCoverURLs);
+        res.status(200).json(booksWithCoverURL);
+        console.log('Books sent as response:', booksWithCoverURL);
     } catch (error) {
         next(error);
     }
@@ -70,7 +70,21 @@ router.post('/books', async (req, res, next) => {
 router.get('/books/:bookId', async (req, res, next) => {
     try {
         const book = await Book.findById(req.params.bookId);
-        res.status(200).json(book);
+        
+        if (!book) {
+            return res.status(404).json({ message: 'Book not found' });
+        }
+        
+        // Fetch and save cover image
+        await fetchAndSaveCover(book.isbn);
+
+        // Include the cover image URL in the book object
+        const booksWithCoverURL = {
+            ...book.toObject(), // Convert Mongoose document to plain JavaScript object
+            coverURL: `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`
+        };
+        res.status(200).json(booksWithCoverURL);
+
     } catch (error) {
         next(error);
     }

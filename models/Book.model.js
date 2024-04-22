@@ -13,31 +13,34 @@ const bookSchema = new Schema ({
     },
     isbn: {
         type: String,
-        required: [true, 'ISBN is required'],
+       // required: [true, 'ISBN is required'],
         maxlength: 13,
         unique: true,
         trim: true
     },
     genre: {
         type: String,
-        enum: ["romance", "fiction", "biography", "poetry"] 
+        //enum: ["romance", "fiction", "biography", "poetry"] 
     },
-    author: {
+   author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Author"
-    },
+   },
     description: {
         type: String,
-        required: [true, 'Description is required'],
+       // required: [true, 'Description is required'],
         trim: true
     },
     reader: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    notes: {
-        type: mongoose.Schema.Types.ObjectId,
+    notes: [{
+        type: mongoose.Schema.Types.Mixed,
         ref: "Note"
+    }],
+    coverURL: {
+        type: String
     }
 })
 

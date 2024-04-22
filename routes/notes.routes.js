@@ -3,10 +3,9 @@ const router = express.Router();
 const logger = require("morgan");
 
 const Note = require("../models/Notes.model");
-const Book = require("../models/Book.model");
-const User = require("../models/User.model");
 
-// Midleware
+
+// Middleware
 router.use(logger("dev"));
 router.use(express.json());
 
@@ -23,9 +22,13 @@ router.get("/notes", async (req, res, next) => {
 });
 
 // POST /notes
-router.post("/notes", async (req, res, next) => {
+router.post('/notes', async (req, res, next) => {
     try {
-        const note = await Note.create(req.body);
+        const { bookId, content } = req.body;
+        
+        // Create a new note and associate it with the specified bookId
+        const note = await Note.create({ bookId, content });
+
         res.status(201).json(note);
     } catch (error) {
         next(error);
@@ -61,11 +64,25 @@ router.delete("/notes/:noteId", async (req, res, next) => {
         next(error);
     }
 });
-// GET /notes/:noteId/readers
-router.get("/notes/:noteId/readers", async (req, res, next) => {
+
+// GET /notes/:noteId/reader
+router.get("/notes/:noteId/reader", async (req, res, next) => {
     try {
-        const note = await Note.findById(req.params.noteId).populate("readers");
-        res.status(200).json(note.readers);
+        const note = await Note.findById(req.params.noteId).populate("reader");
+        res.status(200).json(note.reader);
+    } catch (error) {
+        next(error);
+    }
+});
+
+// GET /notes/:bookId
+router.get("/books/:bookId", async (req, res, next) => {
+    try {
+        console.log("Received bookId:", req.params.bookId);
+        const bookId = req.params.bookId;
+        const notes = await Note.find({ bookId }).populate("book").populate("reader");
+        console.log("Found notes:", notes);
+        res.status(200).json(notes);
     } catch (error) {
         next(error);
     }

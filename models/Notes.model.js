@@ -7,13 +7,22 @@ const noteSchema = new Schema ({
         required: [true, 'Content is required'],
         trim: true
     },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    },
     reader: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
+    bookId: {
+        type: mongoose.Schema.Types.ObjectId,
+        //required: [true, 'The book is required'],
+        ref: "Book"
+    },
     book: {
         type: mongoose.Schema.Types.ObjectId,
-        required: [true, 'The book is required'],
+        //required: [true, 'The book is required'],
         ref: "Book"
     }
 });

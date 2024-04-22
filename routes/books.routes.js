@@ -1,11 +1,4 @@
 
-// TO DO:
-
-// 1 - DELETE WHAT YOU DON'T USE: path, fs, User, const book nas routes - MAS VER BEM SE TUDO FUNCIONA
-
-// 2 - POR AS PROTECOES -  IS AUTHENTICATED, IS OWNER (VER EVENTSLAP)
-
-
 const express = require('express');
 const router = express.Router();
 const logger = require('morgan');
@@ -18,7 +11,7 @@ const Note = require('../models/Notes.model');
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 const { isOwner } = require("../middleware/isOwner.middleware.js");
 
-// const { fetchAndSaveCover } = require("../middleware/fetchAndSaveCover.middleware");
+
 
 // Middleware
 router.use(logger('dev'));
@@ -47,10 +40,12 @@ router.get('/books', async (req, res, next) => {
 });
 
 // POST /books
-router.post('/books', async (req, res, next) => {
+router.post('/books', isAuthenticated, async (req, res, next) => {
     try {
         // Extract book data from the request body
-        const { title, author, notes, year, isbn, genre, description, reader, coverURL } = req.body;
+        const { title, author, notes, year, isbn, genre, description, coverURL } = req.body;
+
+        const {_id: userId} = req.payload;
 
         // Create the book document
         const book = await Book.create({
@@ -60,7 +55,7 @@ router.post('/books', async (req, res, next) => {
             isbn,
             genre,
             description,
-            reader,
+            reader: userId,
             coverURL
         });
 
@@ -107,6 +102,8 @@ router.get('/books/:bookId', async (req, res, next) => {
             return res.status(404).json({ message: 'Book not found' });
         }
         
+        console.log('Populated Book:', book);
+
         const bookWithCoverURL = {
             ...book.toObject(),
             coverURL: `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`
@@ -120,7 +117,7 @@ router.get('/books/:bookId', async (req, res, next) => {
 
 
 // PUT /books/:bookId
-router.put('/books/:bookId', async (req, res, next) => {
+router.put('/books/:bookId', isAuthenticated, async (req, res, next) => {
     try {
         const book = await Book.findByIdAndUpdate(req.params.bookId, req.body, { new: true });
         res.status(200).json(book);
@@ -130,7 +127,7 @@ router.put('/books/:bookId', async (req, res, next) => {
 });
 
 // DELETE /books/:bookId
-router.delete('/books/:bookId', async (req, res, next) => {
+router.delete('/books/:bookId', isAuthenticated, isOwner ,async (req, res, next) => {
     try {
         const book = await Book.findByIdAndDelete(req.params.bookId);
         res.status(204).json(book);
@@ -157,7 +154,7 @@ router.get('/books/:bookId/notes', async (req, res, next) => {
 
 
 // POST /books/:bookId/notes
-router.post('/books/:bookId/notes', async (req, res, next) => {
+router.post('/books/:bookId/notes', isAuthenticated, async (req, res, next) => {
     try {
         const { bookId } = req.params;
         const { notes } = req.body;
@@ -204,7 +201,7 @@ router.post('/books/:bookId/notes', async (req, res, next) => {
 
 
 // PUT /books/:bookId/notes/:noteId
-router.put('/books/:bookId/notes/:noteId', async (req, res, next) => {
+router.put('/books/:bookId/notes/:noteId', isAuthenticated, async (req, res, next) => {
     try {
         const book = await Book.findById(req.params.bookId);
         const note = await Note.findByIdAndUpdate(req.params.noteId, req.body);
@@ -215,7 +212,7 @@ router.put('/books/:bookId/notes/:noteId', async (req, res, next) => {
 });
 
 // DELETE /books/:bookId/notes/:noteId
-router.delete('/books/:bookId/notes/:noteId', async (req, res, next) => {
+router.delete('/books/:bookId/notes/:noteId', isAuthenticated, isOwner,async (req, res, next) => {
     try {
         const book = await Book.findById(req.params.bookId);
         const note = await Note.findByIdAndDelete(req.params.noteId);

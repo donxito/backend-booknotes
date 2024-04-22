@@ -6,6 +6,9 @@ const logger = require("morgan");
 const Author = require("../models/Author.model");
 const Book = require("../models/Book.model");
 
+const { isAuthenticated } = require("../middleware/jwt.middleware.js");
+const { isOwner } = require("../middleware/isOwner.middleware.js");
+
 
 // Middleware
 router.use(logger("dev"));
@@ -24,7 +27,7 @@ router.get("/authors", async (req, res, next) => {
 });
 
 // POST /authors
-router.post("/authors", async (req, res, next) => {
+router.post("/authors", isAuthenticated, async (req, res, next) => {
     try {
         const author = await Author.create(req.body);
         res.status(201).json(author);
@@ -44,7 +47,7 @@ router.get("/authors/:authorId", async (req, res, next) => {
 });
 
 // PUT /authors/:authorId
-router.put("/authors/:authorId", async (req, res, next) => {
+router.put("/authors/:authorId", isAuthenticated, async (req, res, next) => {
     try {
         const author = await Author.findByIdAndUpdate(req.params.authorId, req.body, { new: true });
         res.status(200).json(author);
@@ -54,7 +57,7 @@ router.put("/authors/:authorId", async (req, res, next) => {
 });
 
 // DELETE /authors/:authorId
-router.delete("/authors/:authorId", async (req, res, next) => {
+router.delete("/authors/:authorId", isAuthenticated, isOwner, async (req, res, next) => {
     try {
         const author = await Author.findByIdAndDelete(req.params.authorId);
         res.status(204).json(author);
@@ -74,7 +77,7 @@ router.get("/authors/:authorId/books", async (req, res, next) => {
 });
 
 // POST /authors/:authorId/books
-router.post("/authors/:authorId/books", async (req, res, next) => {
+router.post("/authors/:authorId/books", isAuthenticated, async (req, res, next) => {
     try {
         const author = await Author.findById(req.params.authorId);
         const book = await Book.create(req.body);

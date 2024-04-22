@@ -17,9 +17,7 @@ router.get("/users/:id", isAuthenticated, (req, res, next) => {
                 email: user.email,
                 name: user.name,
                 username: user.username,
-                avatar: user.avatar,
-                about: user.about,
-                
+
             });
         })
         .catch((error) => {
@@ -29,8 +27,8 @@ router.get("/users/:id", isAuthenticated, (req, res, next) => {
 
 // PUT /users/:userId - Update user by id
 router.put("/users/:id", isAuthenticated, (req, res, next) => {
-    const { userId } = req.params;
-    User.findByIdAndUpdate(userId, req.body, { new: true })
+    const { id } = req.params;
+    User.findByIdAndUpdate(id, req.body, { new: true })
         .then((updatedUser) => {
             res.json(updatedUser);
         })
@@ -41,8 +39,8 @@ router.put("/users/:id", isAuthenticated, (req, res, next) => {
 
 // DELETE /users/:userId - Delete user by id
 router.delete("/users/:id", isAuthenticated, (req, res, next) => {
-    const { userId } = req.params;
-    User.findByIdAndDelete(userId)
+    const { id } = req.params;
+    User.findByIdAndDelete(id)
         .then((deletedUser) => {
             res.json(deletedUser);
         })

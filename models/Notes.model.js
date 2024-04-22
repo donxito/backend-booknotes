@@ -11,18 +11,8 @@ const noteSchema = new Schema ({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    reader: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    },
     bookId: {
         type: mongoose.Schema.Types.ObjectId,
-        //required: [true, 'The book is required'],
-        ref: "Book"
-    },
-    book: {
-        type: mongoose.Schema.Types.ObjectId,
-        //required: [true, 'The book is required'],
         ref: "Book"
     }
 });

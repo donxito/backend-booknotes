@@ -18,14 +18,6 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Name is required."],
     },
-    username: {
-      type: String,
-      unique: true,
-    },
-    about: {
-      type: String,
-      default: "I am using BookNotes.",
-    },
     books: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Book",

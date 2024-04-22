@@ -47,7 +47,7 @@ router.get("/authors/:authorId", async (req, res, next) => {
 });
 
 // PUT /authors/:authorId
-router.put("/authors/:authorId", isAuthenticated, async (req, res, next) => {
+router.put("/authors/:authorId", isAuthenticated, isOwner, async (req, res, next) => {
     try {
         const author = await Author.findByIdAndUpdate(req.params.authorId, req.body, { new: true });
         res.status(200).json(author);

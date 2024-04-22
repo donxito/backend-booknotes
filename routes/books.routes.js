@@ -117,7 +117,7 @@ router.get('/books/:bookId', async (req, res, next) => {
 
 
 // PUT /books/:bookId
-router.put('/books/:bookId', isAuthenticated, async (req, res, next) => {
+router.put('/books/:bookId', isAuthenticated, isOwner, async (req, res, next) => {
     try {
         const book = await Book.findByIdAndUpdate(req.params.bookId, req.body, { new: true });
         res.status(200).json(book);

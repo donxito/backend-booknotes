@@ -50,7 +50,7 @@ router.get("/notes/:noteId", async (req, res, next) => {
 });
 
 // PUT /notes/:noteId
-router.put("/notes/:noteId", isAuthenticated, async (req, res, next) => {
+router.put("/notes/:noteId", isAuthenticated, isOwner, async (req, res, next) => {
     try {
         const note = await Note.findByIdAndUpdate(req.params.noteId, req.body);
         res.status(200).json(note);

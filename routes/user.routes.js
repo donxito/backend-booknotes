@@ -16,7 +16,7 @@ router.get("/users/:id", isAuthenticated, (req, res, next) => {
                 _id: user._id,
                 email: user.email,
                 name: user.name,
-                username: user.username,
+       
 
             });
         })

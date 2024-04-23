@@ -5,7 +5,7 @@ const User = require("../models/User.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 
 // GET /users/:id - Get user by id
-router.get("/users/:id", isAuthenticated, (req, res, next) => {
+router.get("/users/:id", (req, res, next) => {
     const { id } = req.params;
     User.findById(id)
         .then((user) => {

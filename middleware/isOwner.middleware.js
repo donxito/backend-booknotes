@@ -1,4 +1,3 @@
-
 const Book = require('../models/Book.model');
 const Author = require("../models/Author.model");
 
@@ -11,30 +10,19 @@ const isOwner = async (req, res, next) => {
     }
 
     const bookId = req.params.bookId; 
-    const authorId = req.params.authorId; 
 
-   
     console.log("User ID:", userId);
     console.log("Book ID:", bookId);
-    console.log("Author ID:", authorId);
 
     try {
-        if (bookId) {
-            const book = await Book.findById(bookId);
-            if (!book) {
-                return res.status(404).json({ message: "Book not found" });
-            }
-            if (book.user.toString() !== userId) { 
-                return res.status(403).json({ message: "Forbidden" });
-            }
-        } else if (authorId) {
-            const author = await Author.findById(authorId);
-            if (!author) {
-                return res.status(404).json({ message: "Venue not found" });
-            }
-            if (author.user.toString() !== userId) { 
-                return res.status(403).json({ message: "Forbidden" });
-            }
+        const book = await Book.findById(bookId);
+        if (!book) {
+            return res.status(404).json({ message: "Book not found" });
+        }
+
+        // Check if the user making the request matches the reader of the book
+        if (book.reader._id.toString() !== userId) { 
+            return res.status(403).json({ message: "Forbidden" });
         }
 
         next(); 

@@ -13,7 +13,7 @@ const bookSchema = new Schema ({
     },
     isbn: {
         type: String,
-       // required: [true, 'ISBN is required'],
+        required: [true, 'ISBN is required'],
         maxlength: 13,
         unique: true,
         trim: true

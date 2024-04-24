@@ -10,7 +10,7 @@ const cookieParser = require("cookie-parser");
 // Needed to accept requests from 'the outside'
 const cors = require("cors");
 
-const FRONTEND_URL = process.env.ORIGIN || "http://localhost:5173";
+const FRONTEND_URL = process.env.ORIGIN || "https://minibookclub.netlify.app";
 
 // Middleware configuration
 module.exports = (app) => {

@@ -20,7 +20,7 @@ module.exports = (app) => {
   // controls a very specific header to pass headers from the frontend
   app.use(
     cors({
-      origin: "https://minibookclub.netlify.app", // Allow specific origin
+      origin: FRONTEND_URL, // Allow specific origin
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed methods
       credentials: true, // Allow credentials (cookies, authorization headers, etc.)
     })

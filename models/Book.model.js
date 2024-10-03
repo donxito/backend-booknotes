@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const bookSchema = new Schema ({
+const bookSchema = new Schema({
     title: {
         type: String,
         required: [true, 'Title is required'],
@@ -20,29 +20,33 @@ const bookSchema = new Schema ({
     },
     genre: {
         type: String,
-        //enum: ["romance", "fiction", "biography", "poetry"] 
     },
-   author: {
+    author: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Author"
-   },
+        ref: "Author",
+        required: [true, 'Author is required']
+    },
     description: {
         type: String,
-       // required: [true, 'Description is required'],
         trim: true
     },
     reader: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    notes: [{
-        type: mongoose.Schema.Types.Mixed,
-        ref: "Note"
-    }],
     coverURL: {
         type: String
-    }
-})
+    },
+    notes: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'Note'
+}]
+}, { 
+    timestamps: true, 
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+
 
 const Book = mongoose.model('Book', bookSchema);
 

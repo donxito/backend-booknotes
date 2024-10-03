@@ -22,14 +22,19 @@ router.use(express.json());
 // GET /books
 router.get('/books', async (req, res, next) => {
     try {
-        // Retrieve all books from the database
-        const books = await Book.find().populate('author').populate('reader').populate({
-            path: 'notes',
-            model: 'Note'
-        });
+        const books = await Book.find()
+            .populate('author')
+            .populate('reader')
+            .populate({
+                path: 'notes',
+                populate: {
+                    path: 'user',
+                    select: 'name'
+                }
+            });
 
         const booksWithCoverURL = books.map(book => ({
-            ...book.toObject(), // Convert Mongoose document to plain JavaScript object
+            ...book.toObject(),
             coverURL: `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`
         }));
 
@@ -84,19 +89,19 @@ router.post('/books', isAuthenticated, async (req, res, next) => {
 });
 
 
-
-
-
 // GET /books/:bookId
 router.get('/books/:bookId', async (req, res, next) => {
     try {
         const book = await Book.findById(req.params.bookId)
-        .populate('author')
-        .populate('reader')
-        .populate({
-            path: 'notes',
-            model: 'Note'
-        });
+            .populate('author')
+            .populate('reader')
+            .populate({
+                path: 'notes',
+                populate: {
+                    path: 'user',
+                    select: 'name'
+                }
+            });
         
         if (!book) {
             return res.status(404).json({ message: 'Book not found' });
@@ -140,16 +145,12 @@ router.delete('/books/:bookId', isAuthenticated, isOwner ,async (req, res, next)
 // GET /books/:bookId/notes
 router.get('/books/:bookId/notes', async (req, res, next) => {
     try {
-        const { bookId } = req.params;
-        
-        // Find all notes associated with the specified book ID
-        const notes = await Note.find({ bookId });
-
-        res.status(200).json(notes);
+      const notes = await Note.find({ book: req.params.bookId }).populate('user', 'name');
+      res.status(200).json(notes);
     } catch (error) {
-        next(error);
+      next(error);
     }
-});
+  });
 
 
 
@@ -157,42 +158,32 @@ router.get('/books/:bookId/notes', async (req, res, next) => {
 router.post('/books/:bookId/notes', isAuthenticated, async (req, res, next) => {
     try {
         const { bookId } = req.params;
-        const { notes } = req.body;
+        const { content } = req.body;
 
-        console.log('Request body:', req.body); // Log the request body to inspect the notes data
+        console.log('Received request to add note:', { bookId, content });
 
-        // Find the existing book document by its ID
         const book = await Book.findById(bookId);
         
-        // Check if the book exists
         if (!book) {
+            console.log('Book not found:', bookId);
             return res.status(404).json({ message: 'Book not found' });
         }
 
-        // Array to store the IDs of the created notes
-        const newNotesIds = [];
+        const newNote = new Note({
+            content,
+            book: book._id,
+            user: req.payload._id
+        });
 
-        // Create a new note document and associate them with the book
-        for (const noteContent of notes) {
-            console.log('Note content:', noteContent);
-            const newNote = new Note({
-                content: noteContent,
-                bookId: book._id
-            });
+        const savedNote = await newNote.save();
+        console.log('Saved new note:', savedNote);
 
-            const savedNote = await newNote.save();
-            newNotesIds.push(savedNote._id);
-
-            // Add the new note to the book document
-            book.notes.push(savedNote._id);
-        }
-
-        // Save the updated book document
+        book.notes.push(savedNote._id);
         await book.save();
 
-        // Respond with the created notes
-        res.status(201).json({ message: 'Notes added successfully', newNotesIds });
+        res.status(201).json(savedNote);
     } catch (error) {
+        console.error('Error adding note:', error);
         next(error);
     }
 });

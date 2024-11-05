@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js",
-    "build": "echo 'This is a Node.js backend service, no build step required.'"
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "axios": "^1.6.8",
